@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
-public class CharacterMovement : MonoBehaviour
+public class CharacterMovement : NetworkBehaviour
 {
     public float speed;
     public Rigidbody2D controller;
@@ -14,6 +15,8 @@ public class CharacterMovement : MonoBehaviour
     private Vector2 currentMovement;
     private void Update()
     {
+        if (!isLocalPlayer) return;
+        
         Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         Vector2 movement = input * (speed / 20);
 
