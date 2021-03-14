@@ -23,7 +23,8 @@ public class MainMenuHelper : MonoBehaviour
 
     public void OnClientButtonPressed()
     {
-        string URL = inputField.text;
+        Uri URL = TryParseIpAddress();
+        networkManager.StartClient(URL);
     }
     
     private Uri TryParseIpAddress()
@@ -44,3 +45,4 @@ public class MainMenuHelper : MonoBehaviour
         return uri;
     }
 }
+
