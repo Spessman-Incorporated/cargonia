@@ -11,10 +11,14 @@ using Object = UnityEngine.Object;
 public class TileMapEditor : EditorWindow
 {
     private TileMap tileMap;
+
+    private Vector2 selectedTilePosition;
     
-    private List<GameObject> assets;
-    private List<GUIContent> assetIcons;
+    private List<GameObject> assets = new List<GameObject>();
+    private List<GUIContent> assetIcons = new List<GUIContent>();
     private int assetIndex;
+
+    private GameObject selectedAsset;
 
     [MenuItem("Editor Tools/TileMap Editor")]
     public static void ShowWindow()
@@ -28,7 +32,10 @@ public class TileMapEditor : EditorWindow
     
     private void OnSceneGUI(SceneView sceneView)
     {
-        Vector2 tilePos = GetMousePosition();
+        selectedTilePosition = GetMousePosition();
+
+        Tile selectedTile = tileMap.GetTile(selectedTilePosition);
+        
     }
 
     private void OnEnable()
@@ -45,7 +52,7 @@ public class TileMapEditor : EditorWindow
         assets.Clear();
         assetIcons.Clear();
 
-        Object[] assetList = AssetDatabase.LoadAllAssetsAtPath("Resources");
+        Object[] assetList = AssetDatabase.LoadAllAssetsAtPath("TileObject");
 
         for (int i = 0; i < assets.Count; i++)
         {
@@ -54,6 +61,28 @@ public class TileMapEditor : EditorWindow
             assetIcons.Add(new GUIContent(assetList[i].name, texture));
             assets.Add((GameObject)assetList[i]);
         }
+    }
+    
+    private void UpdateSelectionGrrid()
+    {
+        GUIStyle style = new GUIStyle();
+        style.imagePosition = ImagePosition.ImageAbove;
+        style.contentOffset = new Vector2(10, 10);
+        style.margin.bottom = 15;
+        style.onNormal.background = Texture2D.grayTexture;
+
+        assetIndex = GUILayout.SelectionGrid(assetIndex, assetIcons.ToArray(), 3, style);
+    }
+
+    private void SetSelectionDefinition()
+    {
+        if (assets.Count == 0)
+            return;
+
+        // If we just switched tabs, take the first items by default
+        if (assetIndex >= assets.Count)
+            assetIndex = 0;
+        selectedAsset = assets[assetIndex];
     }
 
     private void OnDisable()
@@ -70,7 +99,7 @@ public class TileMapEditor : EditorWindow
         mousePosition.y = -mousePosition.y;
 
         mousePosition.z = 0;
-        
+
         
         Debug.Log(mousePosition);
         return mousePosition;
